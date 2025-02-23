@@ -1,58 +1,49 @@
-import { exec } from 'child_process';
-import { promisify } from 'util';
-
-const execAsync = promisify(exec);
-
-class AutoSaveService {
+export class AutoSaveService {
   private timer: NodeJS.Timeout | null = null;
-  private isCommitting = false;
+  private readonly SAVE_INTERVAL = 5 * 60 * 1000; // 5 דקות
 
-  async gitCommit() {
-    if (this.isCommitting) return;
-    
+  constructor() {
+    this.startAutoSave();
+  }
+
+  private async gitCommit() {
     try {
-      this.isCommitting = true;
-      
       const response = await fetch('/api/git', {
         method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
       });
-      
+
       const data = await response.json();
       
-      if (data.success) {
-        console.log('✅', data.message);
-      } else {
-        console.error('❌ שגיאה בשמירה אוטומטית:', data.error);
+      if (!data.success) {
+        throw new Error(data.error);
       }
+      
+      console.log(data.message);
     } catch (error) {
-      console.error('❌ שגיאה בשמירה אוטומטית:', error);
-    } finally {
-      this.isCommitting = false;
+      console.error('שגיאה בשמירה אוטומטית:', error);
     }
   }
 
-  startAutoSave(intervalMinutes: number = 5) {
+  public startAutoSave() {
     if (this.timer) {
       clearInterval(this.timer);
     }
-
-    // המרת דקות למילישניות
-    const interval = intervalMinutes * 60 * 1000;
 
     this.timer = setInterval(() => {
       this.gitCommit();
-    }, interval);
-
-    console.log(`🔄 הופעלה שמירה אוטומטית כל ${intervalMinutes} דקות`);
+    }, this.SAVE_INTERVAL);
   }
 
-  stopAutoSave() {
+  public stopAutoSave() {
     if (this.timer) {
       clearInterval(this.timer);
       this.timer = null;
-      console.log('⏹️ שמירה אוטומטית הופסקה');
     }
   }
 }
 
+// יצירת מופע יחיד של השירות
 export const autoSaveService = new AutoSaveService(); 

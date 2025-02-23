@@ -78,18 +78,126 @@
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-rubik;
   }
 }
 
-.task-card {
-  @apply hover:shadow-lg transition-all duration-200 hover:-translate-y-0.5;
+/* RTL Support */
+[dir="rtl"] {
+  .sidebar {
+    @apply border-l-0 border-r;
+  }
+
+  .task-card {
+    @apply hover:shadow-lg transition-all duration-200 hover:-translate-y-0.5;
+  }
+
+  .category-badge {
+    @apply px-3 py-1 rounded-full text-xs font-medium inline-flex items-center gap-2;
+  }
+
+  .task-metadata {
+    @apply inline-flex items-center gap-1 text-sm text-muted-foreground;
+  }
+
+  .task-metadata-icon {
+    @apply h-4 w-4 text-muted-foreground/60;
+  }
 }
 
-.category-badge {
-  @apply px-3 py-1 rounded-full text-xs font-medium inline-flex items-center gap-2;
+/* Responsive Design */
+@media (max-width: 768px) {
+  .main-content {
+    @apply px-4;
+  }
+
+  .task-card {
+    @apply flex-col;
+  }
+
+  .task-metadata {
+    @apply flex-wrap justify-start;
+  }
 }
 
+/* Print Styles */
+@media print {
+  @page {
+    size: A4;
+    margin: 1.5cm;
+  }
+
+  body {
+    width: 210mm;
+    min-height: 297mm;
+    margin: 0 auto;
+    padding: 0;
+    font-size: 12pt;
+    line-height: 1.3;
+    background: white !important;
+    color: black !important;
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+
+  .task-card,
+  .card,
+  table tr {
+    page-break-inside: avoid;
+  }
+
+  .no-print,
+  header,
+  .sidebar,
+  button:not(.print-button) {
+    display: none !important;
+  }
+
+  table {
+    width: 100% !important;
+    border-collapse: collapse;
+  }
+
+  td, th {
+    padding: 8pt;
+    border: 1pt solid #ddd;
+  }
+
+  h1 { font-size: 18pt; }
+  h2 { font-size: 16pt; }
+  h3 { font-size: 14pt; }
+  p, li { font-size: 12pt; }
+
+  main {
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 1cm !important;
+    overflow: visible !important;
+  }
+
+  .category-badge,
+  .badge,
+  .status-indicator {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  .grid {
+    display: block !important;
+  }
+
+  .grid > * {
+    width: 100% !important;
+    margin-bottom: 1cm;
+  }
+
+  a[href^="http"]:after {
+    content: " (" attr(href) ")";
+    font-size: 10pt;
+  }
+}
+
+/* Category Badge Colors */
 .category-badge.design {
   @apply bg-[hsl(var(--category-design)/0.1)] text-[hsl(var(--category-design))];
 }
@@ -110,97 +218,58 @@
   @apply bg-[hsl(var(--category-research)/0.1)] text-[hsl(var(--category-research)/0.8)];
 }
 
-.task-metadata {
-  @apply inline-flex items-center gap-1 text-sm text-muted-foreground;
+/* Loading States */
+.loading {
+  @apply animate-pulse bg-muted/50;
 }
 
-.task-metadata-icon {
-  @apply h-4 w-4 text-muted-foreground/60;
+/* Transitions */
+.fade-enter {
+  opacity: 0;
+  transform: translateY(10px);
 }
 
-@media print {
-  /* הגדרת גודל דף A4 */
-  @page {
-    size: A4;
-    margin: 1.5cm;
-  }
+.fade-enter-active {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 300ms, transform 300ms;
+}
 
-  /* הגדרות בסיסיות להדפסה */
-  body {
-    width: 210mm;  /* רוחב דף A4 */
-    min-height: 297mm;  /* גובה דף A4 */
-    margin: 0 auto;
-    padding: 0;
-    font-size: 12pt;
-    line-height: 1.3;
-    background: white !important;
-    color: black !important;
-    print-color-adjust: exact;
-    -webkit-print-color-adjust: exact;
-  }
+.fade-exit {
+  opacity: 1;
+  transform: translateY(0);
+}
 
-  /* מניעת שבירת תוכן באמצע */
-  .task-card,
-  .card,
-  table tr {
-    page-break-inside: avoid;
-  }
+.fade-exit-active {
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 300ms, transform 300ms;
+}
 
-  /* הסתרת אלמנטים מיותרים */
-  .no-print,
-  header,
-  .sidebar,
-  button:not(.print-button) {
-    display: none !important;
-  }
+/* Mobile Menu */
+.mobile-menu {
+  @apply fixed inset-0 bg-background/80 backdrop-blur-sm z-50 lg:hidden;
+}
 
-  /* התאמת תצוגת הטבלאות */
-  table {
-    width: 100% !important;
-    border-collapse: collapse;
-  }
+.mobile-menu-content {
+  @apply fixed inset-y-0 right-0 w-full max-w-xs bg-background shadow-lg p-6 transition-transform duration-300 ease-in-out;
+}
 
-  td, th {
-    padding: 8pt;
-    border: 1pt solid #ddd;
-  }
+.mobile-menu[data-state="open"] .mobile-menu-content {
+  @apply translate-x-0;
+}
 
-  /* התאמת גדלי טקסט */
-  h1 { font-size: 18pt; }
-  h2 { font-size: 16pt; }
-  h3 { font-size: 14pt; }
-  p, li { font-size: 12pt; }
+.mobile-menu[data-state="closed"] .mobile-menu-content {
+  @apply translate-x-full;
+}
 
-  /* התאמת מרווחים */
-  main {
-    width: 100% !important;
-    margin: 0 !important;
-    padding: 1cm !important;
-    overflow: visible !important;
-  }
-
-  /* שמירה על צבעים בהדפסה */
-  .category-badge,
-  .badge,
-  .status-indicator {
-    -webkit-print-color-adjust: exact !important;
-    print-color-adjust: exact !important;
-  }
-
-  /* התאמת תצוגת גריד */
-  .grid {
-    display: block !important;
-  }
-
-  .grid > * {
-    width: 100% !important;
-    margin-bottom: 1cm;
-  }
-
-  /* הצגת קישורים */
-  a[href^="http"]:after {
-    content: " (" attr(href) ")";
-    font-size: 10pt;
+/* Accessibility */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }
 

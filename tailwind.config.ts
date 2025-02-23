@@ -9,7 +9,25 @@ const config: Config = {
     "*.{js,ts,jsx,tsx,mdx}"
   ],
   theme: {
+  	container: {
+  		center: true,
+  		padding: "2rem",
+  		screens: {
+  			"2xl": "1400px",
+  		},
+  	},
   	extend: {
+  		fontFamily: {
+  			rubik: ["Rubik", "sans-serif"],
+  		},
+  		screens: {
+  			xs: "475px",
+  			sm: "640px",
+  			md: "768px",
+  			lg: "1024px",
+  			xl: "1280px",
+  			"2xl": "1536px",
+  		},
   		colors: {
   			background: 'hsl(var(--background))',
   			foreground: 'hsl(var(--foreground))',
@@ -87,15 +105,25 @@ const config: Config = {
         'fadeIn': {
           '0%': { opacity: '0', transform: 'translateY(10px)' },
           '100%': { opacity: '1', transform: 'translateY(0)' }
+        },
+        'slideInRight': {
+          '0%': { transform: 'translateX(100%)' },
+          '100%': { transform: 'translateX(0)' }
+        },
+        'slideOutRight': {
+          '0%': { transform: 'translateX(0)' },
+          '100%': { transform: 'translateX(100%)' }
         }
   		},
   		animation: {
   			'accordion-down': 'accordion-down 0.2s ease-out',
   			'accordion-up': 'accordion-up 0.2s ease-out',
-        'fadeIn': 'fadeIn 0.5s ease-out forwards'
+        'fadeIn': 'fadeIn 0.5s ease-out forwards',
+        'slideInRight': 'slideInRight 0.3s ease-out',
+        'slideOutRight': 'slideOutRight 0.3s ease-out'
   		}
   	}
   },
-  plugins: [require("tailwindcss-animate")],
+  plugins: [require("tailwindcss-animate"), require("@tailwindcss/typography")],
 };
 export default config;

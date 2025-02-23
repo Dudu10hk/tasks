@@ -252,7 +252,7 @@ export default function App() {
 
   useEffect(() => {
     // הפעלת שמירה אוטומטית כל 5 דקות
-    autoSaveService.startAutoSave(5);
+    autoSaveService.startAutoSave();
 
     // ניקוי בעת סגירת האפליקציה
     return () => {

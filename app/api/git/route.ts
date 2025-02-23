@@ -1,17 +1,26 @@
+import { exec } from 'child_process';
+import { promisify } from 'util';
 import { NextResponse } from 'next/server';
-import { commitAndPush } from '@/lib/git-handler';
+
+const execAsync = promisify(exec);
 
 export async function POST() {
   try {
-    const result = await commitAndPush();
+    const date = new Date().toLocaleString('he-IL', { timeZone: 'Asia/Jerusalem' });
     
-    if (result.success) {
-      return NextResponse.json(result);
-    } else {
-      return NextResponse.json(result, { status: 500 });
-    }
+    await execAsync('git add .');
+    await execAsync(`git commit -m "שמירה אוטומטית - ${date}"`);
+    await execAsync('git push');
+
+    return NextResponse.json({ 
+      success: true, 
+      message: `בוצעה שמירה אוטומטית - ${date}` 
+    });
   } catch (error) {
-    console.error('שגיאה בשמירה אוטומטית:', error);
-    return NextResponse.json({ success: false, error: String(error) }, { status: 500 });
+    console.error('שגיאה בביצוע פעולות Git:', error);
+    return NextResponse.json({ 
+      success: false, 
+      error: 'שגיאה בביצוע פעולות Git' 
+    }, { status: 500 });
   }
 } 
